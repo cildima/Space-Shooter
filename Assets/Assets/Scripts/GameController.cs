@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     public GameObject[] hazards;
+    public GameObject player;
     public Vector3 spawnValues;
     public int hazardCount;
     public float spawnWait;
@@ -18,6 +19,7 @@ public class GameController : MonoBehaviour
     private bool gameOver;
     private bool restart;
     private int score;
+    private PlayerController playerController;
 
     IEnumerator SpawnWaves ()
     {
@@ -36,11 +38,18 @@ public class GameController : MonoBehaviour
 
             if (gameOver)
             {
-                restartText.text = "Press 'R' for Restart";
-                restart = true;
-                break;
+                RespawnPlayer();
+                gameOver = false;
+                //restartText.text = "Press 'R' for Restart";
+                //restart = true;
+                //break;
             }
         }
+    }
+
+    private void RespawnPlayer()
+    {
+        StartCoroutine(playerController.Respawn());
     }
 
     private void Start()
@@ -50,8 +59,19 @@ public class GameController : MonoBehaviour
         restartText.text = "";
         gameOverText.text = "";
         score = 0;
+        Instantiate(player, player.transform.position, player.transform.rotation);
         UpdateScore();
         StartCoroutine(SpawnWaves());
+
+        GameObject playerControllerObject = GameObject.FindWithTag("Player");
+        if (playerControllerObject != null)
+        {
+            playerController = playerControllerObject.GetComponent<PlayerController>();
+        }
+        if (playerController == null)
+        {
+            Debug.Log("Cannot find 'playerController' script");
+        }
     }
 
     private void Update()

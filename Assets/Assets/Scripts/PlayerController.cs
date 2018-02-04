@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody rb;
     private AudioSource audioSource;
+    private MeshCollider mc;
+    private MeshRenderer mr;
     public Boundary boundary;
     public float speed;
     public float tilt;
@@ -27,6 +29,8 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
+        mc = GetComponent<MeshCollider>();
+        mr = GetComponent<MeshRenderer>();
     }
 
     private void Update()
@@ -59,5 +63,38 @@ public class PlayerController : MonoBehaviour
         );
 
         rb.rotation = Quaternion.Euler(0.0f, 0.0f, rb.velocity.x * -tilt);
+    }
+
+    public void DisableRenderer()
+    {
+        mr.enabled = false;
+    }
+
+    public void EnableRenderer()
+    {
+        mr.enabled = true;
+    }
+
+    public void DisableTrigger()
+    {
+        mc.enabled = false;
+    }
+
+    public void EnableTrigger()
+    {
+        mc.enabled = true;
+    }
+
+    public IEnumerator Respawn()
+    {
+        DisableTrigger();
+        for (int i = 0; i < 3; i++)
+        {
+            DisableRenderer();
+            yield return new WaitForSeconds(0.5f);
+            EnableRenderer();
+            yield return new WaitForSeconds(0.5f);
+        }
+        EnableTrigger();
     }
 }
